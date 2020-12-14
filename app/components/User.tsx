@@ -1,11 +1,23 @@
 import React from "react";
 import queryString from "query-string";
-import { fetchUser, fetchPosts } from "../utils/api";
+import { fetchUser, fetchPosts, User, Post } from "../utils/api";
 import Loading from "./Loading";
 import { formatDate } from "../utils/helpers";
 import PostsList from "./PostsList";
 
-function postReducer(state, action) {
+interface PostState {
+  loadingUser: boolean;
+  loadingPosts: boolean;
+  error: string | null;
+  user: User | null;
+  posts: Post[] | null;
+}
+type PostAction =
+  | { type: "fetch" }
+  | { type: "user"; user: User }
+  | { type: "posts"; posts: Post[] }
+  | { type: "error"; message: string };
+function postReducer(state: PostState, action: PostAction): PostState {
   if (action.type === "fetch") {
     return {
       ...state,
@@ -37,8 +49,12 @@ function postReducer(state, action) {
   }
 }
 
-export default function User({ location }) {
-  const { id } = queryString.parse(location.search);
+export default function UserComponent({
+  location,
+}: {
+  location: { search: string };
+}) {
+  const { id } = queryString.parse(location.search) as { id: string };
 
   const [state, dispatch] = React.useReducer(postReducer, {
     user: null,
@@ -68,9 +84,8 @@ export default function User({ location }) {
 
   return (
     <React.Fragment>
-      {loadingUser === true ? (
-        <Loading text="Fetching User" />
-      ) : (
+      {loadingUser === true && <Loading text="Fetching User" />}{" "}
+      {user && (
         <React.Fragment>
           <h1 className="header">{user.id}</h1>
           <div className="meta-info-light">
@@ -84,9 +99,10 @@ export default function User({ location }) {
           <p dangerouslySetInnerHTML={{ __html: user.about }} />
         </React.Fragment>
       )}
-      {loadingPosts === true ? (
-        loadingUser === false && <Loading text="Fetching posts" />
-      ) : (
+      {loadingPosts === true && loadingUser === false && (
+        <Loading text="Fetching posts" />
+      )}
+      {posts && (
         <React.Fragment>
           <h2>Posts</h2>
           <PostsList posts={posts} />
