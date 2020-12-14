@@ -1,7 +1,7 @@
 {
-  "name": "react-hooks-course-curriculum",
+  "name": "react-with-typescript-course-curriculum",
   "version": "1.0.0",
-  "description": "Curriculum for TylerMcGinnis.com's React Hooks course.",
+  "description": "Curriculum for ui.dev React with TypeScript course.",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server",
